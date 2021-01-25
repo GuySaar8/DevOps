@@ -24,13 +24,15 @@ insert into employees VALUES (100,'Steven','King','SKING','515.123.4567','1987-0
 
 select * from employees;
 
-# 1 Write a query to get number of employees started work in each month
+# Q1 Write a query to get number of employees started work in each month
+
 select month(HIRE_DATE) as hired_month, 
 count(HIRE_DATE) as how_many_hired
 from lesson3.employees
 group by month(HIRE_DATE);
 
-# 2 Write a query to get second month in which started works a biggest number of employees;
+# Q2 Write a query to get second month in which started works a biggest number of employees;
+
 # was not able to do the query with out setting a parmanent month(HIRE_DATE)
 # was only able to run this command becuase we got info from Q1
 
@@ -38,17 +40,11 @@ select month(HIRE_DATE) as hired_month, count(HIRE_DATE) as how_many_hired
 from 
 	(
 	select * from lesson3.employees 
-    where month(HIRE_DATE)="8"
-    ) as c
+	where month(HIRE_DATE)="8"
+    	) as c
 group by month(HIRE_DATE);
 
-# note for self:
-# select month(HIRE_DATE) as hired_month, count(HIRE_DATE) as how_many_hired
-# from lesson3.employees
-# group by month(HIRE_DATE)
-# order by how_many_hired desc;
-
-# 3 Write a query to find the full name and salary of the employees who have a higher salary than the employee whose last_name='Bull';
+# Q3 Write a query to find the full name and salary of the employees who have a higher salary than the employee whose last_name='Bull';
 
 set @test = (select salary from employees where LAST_NAME="bull");
 select EMPLOYEE_ID,FIRST_NAME,LAST_NAME,SALARY 
@@ -56,7 +52,7 @@ from  employees
 where salary > @test
 order by salary desc;
 
-# 4 Write a query to find the full name and salary of the employees whose salary is equal to the minimum salary for their job grade.
+# Q4 Write a query to find the full name and salary of the employees whose salary is equal to the minimum salary for their job grade.
 set @test = (select min(salary) from employees where DEPARTMENT_ID="80");
 select @test;
 select EMPLOYEE_ID,FIRST_NAME,LAST_NAME,SALARY 
@@ -64,21 +60,21 @@ from  employees
 where salary > @test
 order by salary desc;
 
-# 5 Write a query to get number of employees has a salry 15% or more graiter then average salary;
+# Q5 Write a query to get number of employees has a salry 15% or more graiter then average salary;
 set @test = (select avg(salary) from  employees);
 select count(*) as "num_of_emp_salary_higer_then_avg*0.15"
 from employees
 where salary >= (@test*0.15)
 order by salary desc;
 
-# 6 Write a query to get a job_d with the hihhest average salary
+# Q6 Write a query to get a job_d with the hihhest average salary
 select DEPARTMENT_ID, avg(salary)
 from employees
 group by DEPARTMENT_ID
 order by salary desc;
 
-# 7 Write a query to calculate a total amount payed for salary during years 1987-1988 per epmployee by epmployee_id;
-# all hired on the same year so I checked the amount pay by month
+# Q7 Write a query to calculate a total amount payed for salary during years 1987-1988 per epmployee by epmployee_id;
+# all hired on the same year so I checked the amount payed by during months 7 - 9
 select sum(salary) 
 from employees
 where month(HIRE_DATE) between "7" and "9";
