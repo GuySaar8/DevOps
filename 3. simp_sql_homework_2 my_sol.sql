@@ -67,9 +67,9 @@ order by salary desc;
 
 # Q5 Write a query to get number of employees has a salry 15% or more graiter then average salary;
 set @test = (select avg(salary) from  employees);
-select count(*) as "num_of_emp_salary_higer_then_avg*0.15"
+select count(*) as "num_of_emp_salary_higer_then_avg*1.15"
 from employees
-where salary >= (@test*0.15);
+where salary >= (@test*1.15);
 
 # Q6 Write a query to get a job_d with the hihhest average salary
 select JOB_ID, avg(salary)
