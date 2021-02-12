@@ -400,12 +400,14 @@ where p.path_id = 1
 group by c.course_id;
 
 #2. The number of hours in a path 
+
 select p.path_name, sum(c.hours) from path_course as ps 
 left join  course as c on ps.course_id = c.course_id
 left join path as p on p.path_id = ps.path_id
 group by p.path_name;
 
 #3. Student course list 
+
 # for all students
 select s.student_id, s.fname, s.lname, c.course_id, c.course_name from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
@@ -491,6 +493,7 @@ left join lesson as l on l.course_id = cc.course_id
 order by t.teacher_id, l.lesson_date;
 
 #3. Start date and end date of the cycles 
+
 # start and end date of all cycles
 select cc.cycle_id, cc.start_date, max(l.lesson_date) as last_lesson from cycle_course as cc
 left join lesson as l on l.course_id = cc.course_id
@@ -575,7 +578,7 @@ group by day(l.lesson_date), hour(l.lesson_date);
 select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, max(a.lesson_number) as total_lesson_of_course from attendance as a
 left join
 (
-    select cycle_id, course_id, student_id, count(attendance) as was_in_class from attendance
+    select cycle_id, course_id, count(attendance) as was_in_class from attendance
 	where attendance = "yes"
 	group by cycle_id ,course_id
 ) as y on y.course_id = a.course_id
@@ -587,7 +590,7 @@ where a.course_id = 4 and a.cycle_id = 1;
 select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course from attendance as a
 left join
 (
-    select cycle_id, course_id, student_id, count(attendance) as was_in_class from attendance
+    select cycle_id, course_id, count(attendance) as was_in_class from attendance
 	where attendance = "yes"
 	group by cycle_id ,course_id
 ) as y on y.course_id = a.course_id
@@ -602,7 +605,7 @@ group by a.course_id, a.cycle_id;
 select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
 left join
 (
-    select course_id, count(attendance) as was_in_class from attendance
+    select cycle_id, course_id, count(attendance) as was_in_class from attendance
 	where attendance = "yes"
 	group by cycle_id ,course_id
 ) as y on y.course_id = a.course_id
@@ -614,7 +617,7 @@ where a.course_id = 13 and a.cycle_id = 1;
 select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
 left join
 (
-    select cycle_id, course_id, student_id, count(attendance) as was_in_class from attendance
+    select cycle_id, course_id, count(attendance) as was_in_class from attendance
 	where attendance = "yes"
 	group by cycle_id ,course_id
 ) as y on y.course_id = a.course_id
