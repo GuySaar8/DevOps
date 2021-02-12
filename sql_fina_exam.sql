@@ -584,7 +584,7 @@ left join student as s on s.student_id = a.student_id
 where a.course_id = 4 and a.cycle_id = 1;
 
 # attendance for all cycle and courses
-select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, max(a.lesson_number) as total_lesson_of_course from attendance as a
+select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course from attendance as a
 left join
 (
     select cycle_id, course_id, student_id, count(attendance) as was_in_class from attendance
@@ -597,20 +597,21 @@ group by a.course_id, a.cycle_id;
 
 
 #4. Percentage of students attendance by course
+
 # attetndance for spesific course and spesific cycle
-select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, max(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
+select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
 left join
 (
-    select cycle_id, course_id, student_id, count(attendance) as was_in_class from attendance
+    select course_id, count(attendance) as was_in_class from attendance
 	where attendance = "yes"
 	group by cycle_id ,course_id
 ) as y on y.course_id = a.course_id
 left join course as c on c.course_id = a.course_id
 left join student as s on s.student_id = a.student_id
-where a.course_id = 4 and a.cycle_id = 1;
+where a.course_id = 13 and a.cycle_id = 1;
 
 # attendance for all cycle and courses
-select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, max(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
+select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
 left join
 (
     select cycle_id, course_id, student_id, count(attendance) as was_in_class from attendance
