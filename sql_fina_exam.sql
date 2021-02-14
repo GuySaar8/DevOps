@@ -409,14 +409,14 @@ group by p.path_name;
 #3. Student course list 
 
 # for all students
-select s.student_id, s.fname, s.lname, c.course_id, c.course_name from cycle_course as cc
+select s.student_id, concat(s.fname," ", s.lname) as students, c.course_id, c.course_name from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
 left join course as c on c.course_id = cc.course_id
 group by s.student_id, c.course_id
 order by s.student_id;
 
 # spesific Student
-select s.student_id, s.fname, s.lname, c.course_id, c.course_name from cycle_course as cc
+select s.student_id, concat(s.fname," ", s.lname) as students, c.course_id, c.course_name from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
 left join course as c on c.course_id = cc.course_id
 where s.student_id = "124576798"
@@ -426,7 +426,7 @@ order by s.student_id;
 #4. Teacher course list (like in Student Portal)
 
 # for all teachers
-select t.teacher_id, t.fname, t.lname, cc.num, cc.cycle_id, cc.course_id, c.course_name, cc.start_date, c.hours, count(s.student_id) as total_students_in_course from cycle_course as cc
+select t.teacher_id, concat(t.fname," ", t.lname) as teacher, cc.num, cc.cycle_id, cc.course_id, c.course_name, cc.start_date, c.hours, count(s.student_id) as total_students_in_course from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
 left join course as c on c.course_id = cc.course_id
 left join teacher as t on t.teacher_id = cc.teacher_id
@@ -434,7 +434,7 @@ group by t.teacher_id, course_id
 order by t.teacher_id;
 
 # spesific teacher
-select t.teacher_id, t.fname, t.lname, cc.num, cc.cycle_id, cc.course_id, c.course_name, cc.start_date, c.hours, count(s.student_id) as total_students_in_course from cycle_course as cc
+select t.teacher_id, concat(t.fname," ", t.lname) as teacher, cc.num, cc.cycle_id, cc.course_id, c.course_name, cc.start_date, c.hours, count(s.student_id) as total_students_in_course from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
 left join course as c on c.course_id = cc.course_id
 left join teacher as t on t.teacher_id = cc.teacher_id
@@ -445,7 +445,7 @@ order by t.teacher_id;
 #5. Teacher hours (10 h per lesson)
 
 # teacher hours spesific course
-select  t.teacher_id, t.fname, t.lname, c.course_name, count(l.lesson_number) as total_course_lessones, count(l.lesson_number)*10 as hours_per_lesson from cycle_course as cc
+select  t.teacher_id, t.fname, t.lname, c.course_name, count(l.lesson_number) as all_lessones, count(l.lesson_number)*10 as hours_per_lesson from cycle_course as cc
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join course as c on c.course_id = cc.course_id
 left join lesson as l on l.course_id = cc.course_id
@@ -453,7 +453,7 @@ group by t.teacher_id, cc.course_id
 order by t.teacher_id;
 
 # teachers hours 
-select  t.teacher_id, t.fname, t.lname, count(l.lesson_number) as total_course_lessones, count(l.lesson_number)*10 as hours_per_lesson from cycle_course as cc
+select  t.teacher_id, concat(t.fname," ", t.lname) as teacher, count(l.lesson_number) as all_lessons, count(l.lesson_number)*10 as hours_per_lesson from cycle_course as cc
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join course as c on c.course_id = cc.course_id
 left join lesson as l on l.course_id = cc.course_id
@@ -464,29 +464,32 @@ group by t.teacher_id;
 #1. Student calendar plan (like in Student Portal)
 
 # spesific studnet
-select cc.cycle_id, s.student_id, s.fname, s.lname, l.lesson_date from cycle_course as cc
+select cc.cycle_id, s.student_id, concat(s.fname," ", s.lname) as student, c.course_name, l.lesson_number, year(l.lesson_date), month(l.lesson_date), concat(t.fname," ", t.lname) as teacher from cycle_course as cc
 left join  student as s on s.cycle = cc.cycle_id
 left join lesson as l on l.course_id = cc.course_id
+left join course as c on c.course_id = cc.course_id
+left join teacher as t on t.teacher_id = cc.teacher_id
 where s.student_id = "123456789"
 order by l.lesson_date;
 
 # for all students
-select cc.cycle_id, s.student_id, s.fname, s.lname, l.lesson_date from cycle_course as cc
+select cc.cycle_id, s.student_id, concat(s.fname," ", s.lname) as student, c.course_name, l.lesson_number, year(l.lesson_date) as year, month(l.lesson_date) as month, day(l.lesson_date) as day, concat(t.fname," ", t.lname) as teacher from cycle_course as cc
 left join  student as s on s.cycle = cc.cycle_id
 left join lesson as l on l.course_id = cc.course_id
+left join course as c on c.course_id = cc.course_id
+left join teacher as t on t.teacher_id = cc.teacher_id
 order by s.student_id, l.lesson_date;
 
 #2. Teacher calendar plan (like in Student Portal)
 
-# spesific teacher
-select cc.cycle_id, t.teacher_id, t.fname, t.lname, l.lesson_date from cycle_course as cc
+select cc.cycle_id, t.teacher_id, concat(t.fname," ", t.lname) as teacher, date(l.lesson_date) as date, date_format(l.lesson_date,'%H:%i') as hour, c.course_name, l.lesson_number from cycle_course as cc
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join course as c on c.course_id = cc.course_id
 left join lesson as l on l.course_id = cc.course_id
 order by t.teacher_id, l.lesson_date;
 
 # all teachers
-select cc.cycle_id, t.teacher_id, t.fname, t.lname, l.lesson_date from cycle_course as cc
+select cc.cycle_id, t.teacher_id, concat(t.fname," ", t.lname) as teacher, date(l.lesson_date) as date, date_format(l.lesson_date,'%H:%i') as hour, c.course_name, l.lesson_number from cycle_course as cc
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join course as c on c.course_id = cc.course_id
 left join lesson as l on l.course_id = cc.course_id
@@ -495,46 +498,52 @@ order by t.teacher_id, l.lesson_date;
 #3. Start date and end date of the cycles 
 
 # start and end date of all cycles
-select cc.cycle_id, cc.start_date, max(l.lesson_date) as last_lesson from cycle_course as cc
+select cc.cycle_id, date(cc.start_date) as start_date, date_format(cc.start_date,'%H:%i') as start_hour, max(date(l.lesson_date)), date_format(l.lesson_date,'%H:%i')  as last_lesson from cycle_course as cc
 left join lesson as l on l.course_id = cc.course_id
 where cc.cycle_id = l.cycle_id
 group by l.cycle_id
 order by l.cycle_id;
 
 # start and end date of spesific cycle
-select cc.cycle_id, cc.start_date, max(l.lesson_date) as last_lesson from cycle_course as cc
+select cc.cycle_id, date(cc.start_date) as start_date, date_format(cc.start_date,'%H:%i') as start_hour, max(date(l.lesson_date)), date_format(l.lesson_date,'%H:%i')  as last_lesson from cycle_course as cc
 left join lesson as l on l.course_id = cc.course_id
 where cc.cycle_id  = "2" and  l.cycle_id  = "2";
 
 #4. Calculate examination date of each course (last calendar date)
 
 # exam dates of all cycle and course
-select cc.cycle_id, cc.course_id, max(l.lesson_date) as exam_day from cycle_course as cc
+select cc.cycle_id, cc.course_id, c.course_name, concat(t.fname," ", t.lname) as studnet, max(date(l.lesson_date)) as exam_day, date_format(l.lesson_date,'%H:%i') as exam_starts from cycle_course as cc
 left join lesson as l on l.course_id = cc.course_id
+left join teacher as t on t.teacher_id = cc.teacher_id
+left join course as c on c.course_id = cc.course_id
 group by cc.cycle_id, cc.course_id
 order by cc.cycle_id, cc.course_id;
 
 # exam dates of all courses on a spesific cycle
-select cc.cycle_id, cc.course_id, max(l.lesson_date) as exam_day from cycle_course as cc
+select cc.cycle_id, cc.course_id, c.course_name, concat(t.fname," ", t.lname) as studnet, max(date(l.lesson_date)) as exam_day, date_format(l.lesson_date,'%H:%i') as exam_starts from cycle_course as cc
 left join lesson as l on l.course_id = cc.course_id
+left join teacher as t on t.teacher_id = cc.teacher_id
+left join course as c on c.course_id = cc.course_id
 where cc.cycle_id  = "2" 
 group by cc.course_id
 order by exam_day;
 
-#5. Schedule for each month, including the date, course name, teacher lesson number, start time and end time 
+
+#5. Schedule for each month, including the date, course name, teacher, lesson number, start time and end time 
 
 #lesson length - assuming it is 10 h as on Q 1
-set @lesson_length = 10;
+set @lesson_length = "10:00";
 
 # all lessons orderd by year - month
-select distinct cc.course_id, c.course_name, t.fname, t.lname, date(l.lesson_date) as date, hour(l.lesson_date) as start_time, hour(l.lesson_date)+@lesson_length as end_time from cycle_course as cc
+select distinct cc.course_id, c.course_name, concat(t.fname," ", t.lname) as teacher, day(l.lesson_date) as day, month(l.lesson_date) as month, year(l.lesson_date) as year, day(l.lesson_date) as day, date_format(l.lesson_date,'%H:%i') as class_starts, addtime(date_format(l.lesson_date,'%H:%i'), (time("4:00"))) as class_ends from cycle_course as cc
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join lesson as l on l.course_id = cc.course_id
 left join course as c on c.course_id = cc.course_id
 order by date (l.lesson_date);
 
 # all lessons on spesific month and  year
-select distinct cc.course_id, c.course_name, t.fname, t.lname, date(l.lesson_date) as date, hour(l.lesson_date) as start_time, hour(l.lesson_date)+@lesson_length as end_time from cycle_course as cc
+select distinct cc.course_id, c.course_name, concat(t.fname," ", t.lname) as teacher, day(l.lesson_date) as day, month(l.lesson_date) as month, year(l.lesson_date) as year, 
+day(l.lesson_date) as day,date_format(l.lesson_date,'%H:%i') as class_starts, addtime(date_format(l.lesson_date,'%H:%i'), (time("4:00"))) as class_ends from cycle_course as cc
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join lesson as l on l.course_id = cc.course_id
 left join course as c on c.course_id = cc.course_id
@@ -545,7 +554,7 @@ where month(l.lesson_date) = "1" and year(l.lesson_date) = "2020";
 #1. List of students by calendar day by teacher per cycle 
 
 # show spesific students who learn in the class of "2020-04-29 18:00:00" and the teacher is "121627387" and his cycle is "2"
-select s.student_id, s.fname, s.lname from cycle_course as cc
+select cc.cycle_id, concat(t.fname, " ", t.lname) as teacher, concat(s.fname," ", s.lname) as student, day(l.lesson_date) as day, month(l.lesson_date) as month, year(l.lesson_date) as year from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join lesson as l on l.course_id = cc.course_id
@@ -554,28 +563,31 @@ where cc.cycle_id = "2" and t.teacher_id = "121627387" and l.lesson_date ="2020-
 
 
 # showing the lessons the cycle of the lesson, the teacher teaching the lesson, student list of the lesson, and the lesson date.
-select cc.cycle_id, t.fname, t.lname, s.fname, s.lname, l.lesson_date from cycle_course as cc
+select cc.cycle_id, concat(t.fname, " ", t.lname) as teacher, concat(s.fname," ", s.lname) as student, c.course_name, day(l.lesson_date) as day, month(l.lesson_date) as month, year(l.lesson_date) as year from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
 left join teacher as t on t.teacher_id = cc.teacher_id
 left join lesson as l on l.course_id = cc.course_id
 left join course as c on c.course_id = cc.course_id
 order by cc.cycle_id, l.lesson_date;
 
+# concat Y M D H + course
+
 #2. Number of students in courses for each calendar day to check class capacity
 
 # how many students will come to the school per spesific day and spesific hour
-select day(l.lesson_date) as day, month(l.lesson_date) as month, year(l.lesson_date) as year , hour(l.lesson_date) as hour, count(s.student_id) as how_many_student_today from cycle_course as cc
+select day(l.lesson_date) as day, month(l.lesson_date) as month, year(l.lesson_date) as year , hour(l.lesson_date) as hour, c.course_name, count(s.student_id) as how_many_student_today from cycle_course as cc
 left join student as s on s.cycle = cc.cycle_id
 left join lesson as l on l.course_id = cc.course_id
 left join course as c on c.course_id = cc.course_id
-group by day(l.lesson_date), hour(l.lesson_date);
+group by date(l.lesson_date), hour(l.lesson_date)
+order by date(l.lesson_date), hour(l.lesson_date);
 
 #3. Attendance , number of lessons for each specialty in numbers per student
 
 # attendance table has only one student in each course and cycle... which means you can only get that attendence for the spesific student on that spesific course
 
 # attetndance for spesific course and spesific cycle
-select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, max(a.lesson_number) as total_lesson_of_course from attendance as a
+select a.cycle_id, a.course_id, c.course_name, s.student_id, concat(s.fname, " ", lname) as student, y.was_in_class, max(a.lesson_number) as total_lesson_of_course from attendance as a
 left join
 (
     select cycle_id, course_id, count(attendance) as was_in_class from attendance
@@ -587,7 +599,7 @@ left join student as s on s.student_id = a.student_id
 where a.course_id = 4 and a.cycle_id = 1;
 
 # attendance for all cycle and courses
-select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course from attendance as a
+select a.cycle_id, a.course_id, c.course_name, s.student_id,s.student_id, concat(s.fname, " ", lname) as student, y.was_in_class, count(a.lesson_number) as total_lesson_of_course from attendance as a
 left join
 (
     select cycle_id, course_id, count(attendance) as was_in_class from attendance
@@ -598,11 +610,12 @@ left join course as c on c.course_id = a.course_id
 left join student as s on s.student_id = a.student_id
 group by a.course_id, a.cycle_id;
 
+# student name
 
 #4. Percentage of students attendance by course
 
 # attetndance for spesific course and spesific cycle
-select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
+select a.cycle_id, a.course_id, c.course_name, s.student_id, s.student_id, concat(s.fname, " ", lname) as student, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, concat(round(( y.was_in_class/max(a.lesson_number)*100 ),2),'%') as attendance_percentage from attendance as a
 left join
 (
     select cycle_id, course_id, count(attendance) as was_in_class from attendance
@@ -611,10 +624,10 @@ left join
 ) as y on y.course_id = a.course_id
 left join course as c on c.course_id = a.course_id
 left join student as s on s.student_id = a.student_id
-where a.course_id = 13 and a.cycle_id = 1;
+where a.course_id = 11 and a.cycle_id = 1;
 
 # attendance for all cycle and courses
-select a.cycle_id, a.course_id, c.course_name, s.student_id, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, y.was_in_class/max(a.lesson_number)*100 as attendance_percentage from attendance as a
+select a.cycle_id, a.course_id, c.course_name, s.student_id, s.student_id, concat(s.fname, " ", lname) as student, y.was_in_class, count(a.lesson_number) as total_lesson_of_course, concat(round(( y.was_in_class/max(a.lesson_number)*100 ),2),'%') as attendance_percentage from attendance as a
 left join
 (
     select cycle_id, course_id, count(attendance) as was_in_class from attendance
@@ -624,7 +637,6 @@ left join
 left join course as c on c.course_id = a.course_id
 left join student as s on s.student_id = a.student_id
 group by a.course_id, a.cycle_id;
-
 
 
   
